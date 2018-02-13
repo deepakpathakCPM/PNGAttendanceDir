@@ -1,11 +1,14 @@
 package com.cpm.pgattendance.xmlHandler;
 
+import com.cpm.pgattendance.getterSetter.AnswersGetterSetter;
 import com.cpm.pgattendance.getterSetter.FailureGetterSetter;
 import com.cpm.pgattendance.getterSetter.JCPMasterGetterSetter;
 import com.cpm.pgattendance.getterSetter.LoginGetterSetter;
 import com.cpm.pgattendance.getterSetter.NonWorkingReasonGetterSetter;
 import com.cpm.pgattendance.getterSetter.QuestionGetterSetter;
 import com.cpm.pgattendance.getterSetter.QuestionnaireGetterSetter;
+import com.cpm.pgattendance.getterSetter.QuestionsGetterSetter;
+import com.cpm.pgattendance.getterSetter.SpecialActivityGetterSetter;
 import com.cpm.pgattendance.getterSetter.VisitorLoginGetterSetter;
 import com.cpm.pgattendance.getterSetter.VisitorSearchGetterSetter;
 
@@ -121,6 +124,9 @@ public class XMLHandlers {
                     }
                     if (xpp.getName().equals("CHECKOUT_STATUS")) {
                         jcpGetterSetter.setCHECKOUT_STATUS(xpp.nextText());
+                    }
+                    if (xpp.getName().equals("REGION_CD")) {
+                        jcpGetterSetter.setREGION_CD(xpp.nextText());
                     }
 
                 }
@@ -322,8 +328,6 @@ public class XMLHandlers {
                     }
 
 
-
-
                 }
                 xpp.next();
             }
@@ -337,5 +341,103 @@ public class XMLHandlers {
         return questionnaireGetterSetter;
     }
 
+    public static SpecialActivityGetterSetter SpecialActivityXMLHandler(XmlPullParser xpp, int eventType) {
+        SpecialActivityGetterSetter specialActivityGetterSetter = new SpecialActivityGetterSetter();
+        try {
+            while (xpp.getEventType() != XmlPullParser.END_DOCUMENT) {
+                if (xpp.getEventType() == XmlPullParser.START_TAG) {
+
+                    if (xpp.getName().equals("META_DATA")) {
+                        specialActivityGetterSetter.setTable_SPECIAL_ACTIVITY(xpp.nextText());
+                    }
+                    if (xpp.getName().equals("REGION_CD")) {
+                        specialActivityGetterSetter.setREGION_CD(xpp.nextText());
+                    }
+                    if (xpp.getName().equals("ACTIVITY_CD")) {
+                        specialActivityGetterSetter.setACTIVITY_CD(xpp.nextText());
+                    }
+                    if (xpp.getName().equals("ACTIVITY")) {
+                        specialActivityGetterSetter.setACTIVITY(xpp.nextText());
+                    }
+                }
+                xpp.next();
+            }
+        } catch (XmlPullParserException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return specialActivityGetterSetter;
+    }
+
+    public static QuestionsGetterSetter QUESTIONSXMLHandler(XmlPullParser xpp, int eventType) {
+        QuestionsGetterSetter questionsGetterSetter = new QuestionsGetterSetter();
+        try {
+            while (xpp.getEventType() != XmlPullParser.END_DOCUMENT) {
+                if (xpp.getEventType() == XmlPullParser.START_TAG) {
+
+                    if (xpp.getName().equals("META_DATA")) {
+                        questionsGetterSetter.setTable_QUESTIONS(xpp.nextText());
+                    }
+                    if (xpp.getName().equals("QUESTION_ID")) {
+                        questionsGetterSetter.setQUESTION_ID(xpp.nextText());
+                    }
+                    if (xpp.getName().equals("QUESTION")) {
+                        questionsGetterSetter.setQUESTION(xpp.nextText());
+                    }
+                    if (xpp.getName().equals("QUESTION_GROUP_ID")) {
+                        questionsGetterSetter.setQUESTION_GROUP_ID(xpp.nextText());
+                    }
+                    if (xpp.getName().equals("QUESTION_GROUP")) {
+                        questionsGetterSetter.setQUESTION_GROUP(xpp.nextText());
+                    }
+                    if (xpp.getName().equals("QUESTION_TYPE")) {
+                        questionsGetterSetter.setQUESTION_TYPE(xpp.nextText());
+                    }
+                }
+                xpp.next();
+            }
+        } catch (XmlPullParserException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return questionsGetterSetter;
+    }
+
+    public static AnswersGetterSetter ANSWERSXMLHandler(XmlPullParser xpp, int eventType) {
+        AnswersGetterSetter answersGetterSetter = new AnswersGetterSetter();
+        try {
+            while (xpp.getEventType() != XmlPullParser.END_DOCUMENT) {
+                if (xpp.getEventType() == XmlPullParser.START_TAG) {
+
+                    if (xpp.getName().equals("META_DATA")) {
+                        answersGetterSetter.setTable_ANSWERS(xpp.nextText());
+                    }
+                    if (xpp.getName().equals("QUESTION_ID")) {
+                        answersGetterSetter.setQUESTION_ID(xpp.nextText());
+                    }
+                    if (xpp.getName().equals("ANSWER_ID")) {
+                        answersGetterSetter.setANSWER_ID(xpp.nextText());
+                    }
+                    if (xpp.getName().equals("ANSWER")) {
+                        answersGetterSetter.setANSWER(xpp.nextText());
+                    }
+                }
+                xpp.next();
+            }
+        } catch (XmlPullParserException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return answersGetterSetter;
+    }
 
 }

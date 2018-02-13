@@ -201,20 +201,20 @@ public class LoginActivity extends AppCompatActivity {
     private boolean isuseridValid(String userid) {
         //TODO: Replace this with your own logic
         boolean flag = true;
-        String u_id = preferences.getString(CommonString.KEY_USERNAME, "");
+      /*  String u_id = preferences.getString(CommonString.KEY_USERNAME, "");
         if (!u_id.equals("") && !userid.equalsIgnoreCase(u_id)) {
             flag = false;
-        }
+        }*/
         return flag;
     }
 
     private boolean isPasswordValid(String password) {
         //TODO: Replace this with your own logic
         boolean flag = true;
-        String pw = preferences.getString(CommonString.KEY_PASSWORD, "");
+      /*  String pw = preferences.getString(CommonString.KEY_PASSWORD, "");
         if (!pw.equals("") && !password.equals(pw)) {
             flag = false;
-        }
+        }*/
         return flag;
     }
 
@@ -334,8 +334,8 @@ public class LoginActivity extends AppCompatActivity {
                         // PUT IN PREFERENCES
                         editor.putString(CommonString.KEY_USERNAME, userid);
                         editor.putString(CommonString.KEY_PASSWORD, password);
-                        //editor.putString(CommonString.KEY_VERSION, String.valueOf(userObject.getResult().get(0).getAppVersion()));
-                        editor.putString(CommonString.KEY_VERSION, String.valueOf(1));
+                        editor.putString(CommonString.KEY_VERSION, String.valueOf(lgs.getVERSION()));
+                        //editor.putString(CommonString.KEY_VERSION, String.valueOf(2));
                         editor.putString(CommonString.KEY_PATH, lgs.getPATH());
                         editor.putString(CommonString.KEY_DATE, lgs.getDATE());
 

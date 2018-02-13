@@ -10,11 +10,17 @@ import android.util.Log;
 
 import com.cpm.pgattendance.bean.TableBean;
 import com.cpm.pgattendance.constant.CommonString;
+import com.cpm.pgattendance.getterSetter.AnswersGetterSetter;
+import com.cpm.pgattendance.getterSetter.CampaignEntryGetterSetter;
 import com.cpm.pgattendance.getterSetter.CoverageBean;
 import com.cpm.pgattendance.getterSetter.JCPMasterGetterSetter;
 import com.cpm.pgattendance.getterSetter.MyPerformanceMer;
 import com.cpm.pgattendance.getterSetter.MyPerformanceRoutewiseMer;
 import com.cpm.pgattendance.getterSetter.NonWorkingReasonGetterSetter;
+import com.cpm.pgattendance.getterSetter.QuestionGetterSetter;
+import com.cpm.pgattendance.getterSetter.QuestionnaireGetterSetter;
+import com.cpm.pgattendance.getterSetter.QuestionsGetterSetter;
+import com.cpm.pgattendance.getterSetter.SpecialActivityGetterSetter;
 import com.cpm.pgattendance.getterSetter.VisitorDetailGetterSetter;
 import com.cpm.pgattendance.getterSetter.VisitorLoginGetterSetter;
 
@@ -25,7 +31,7 @@ import java.util.ArrayList;
  */
 
 public class PNGAttendanceDB extends SQLiteOpenHelper {
-    public static final String DATABASE_NAME = "PNG_ATTENDANCE_DB";
+    public static final String DATABASE_NAME = "PNG_ATTENDANCE_DB3";
     public static final int DATABASE_VERSION = 1;
     private SQLiteDatabase db;
     Context context;
@@ -50,10 +56,16 @@ public class PNGAttendanceDB extends SQLiteOpenHelper {
             db.execSQL(CommonString.CREATE_TABLE_ATTENDANCE);
             db.execSQL(CommonString.CREATE_TABLE_COVERAGE_DATA);
             db.execSQL(CommonString.CREATE_TABLE_VISITOR_LOGIN);
+            db.execSQL(CommonString.CREATE_TABLE_SPECIAL_ACTIVITY_SAVED_DATA);
+            db.execSQL(CommonString.CREATE_TABLE_STORELIST_CAMPAIGN);
+            db.execSQL(CommonString.CREATE_TABLE_QUESTIONNAIRE_DATA);
+            db.execSQL(CommonString.CREATE_TABLE_CLIENT_FEEDBACK_DATA);
             db.execSQL(TableBean.getTable_JCPMaster());
             db.execSQL(TableBean.getNonworkingtable());
-            // db.execSQL(TableBean.getVisitorLogintable());
-            //db.execSQL(TableBean.getQuestiontable());
+            db.execSQL(TableBean.getQuestionnaireTable());
+            db.execSQL(TableBean.getSpecialActivityTable());
+            db.execSQL(TableBean.getQuestionsTable());
+            db.execSQL(TableBean.getAnswersTable());
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -116,7 +128,7 @@ public class PNGAttendanceDB extends SQLiteOpenHelper {
 
                 dbcursor = db
                         .rawQuery(
-                                "SELECT -1 AS REASON_CD,'Select' as REASON,'-1' as ENTRY_ALLOW,'-1' AS FOR_STORE,'-1' AS FOR_ATT union SELECT * FROM NON_WORKING_REASON WHERE ENTRY_ALLOW ='1'"
+                                "SELECT -1 AS REASON_CD,'Select' as REASON,'-1' as ENTRY_ALLOW,'-1' AS FOR_STORE,'-1' AS FOR_ATT union SELECT * FROM NON_WORKING_REASON"
                                 , null);
 
             } else {
@@ -168,6 +180,7 @@ public class PNGAttendanceDB extends SQLiteOpenHelper {
                 values.put("STORETYPE", (data.getSTORETYPE().get(i)));
                 values.put("UPLOAD_STATUS", (data.getUPLOAD_STATUS().get(i)));
                 values.put("CHECKOUT_STATUS", (data.getCHECKOUT_STATUS().get(i)));
+                values.put("REGION_CD", Integer.parseInt(data.getREGION_CD().get(i)));
 
                 db.insert("JOURNEY_PLAN", null, values);
             }
@@ -258,6 +271,8 @@ public class PNGAttendanceDB extends SQLiteOpenHelper {
                             .getColumnIndexOrThrow("UPLOAD_STATUS")));
                     sb.setCHECKOUT_STATUS(dbcursor.getString(dbcursor
                             .getColumnIndexOrThrow("CHECKOUT_STATUS")));
+                    sb.setREGION_CD(dbcursor.getString(dbcursor
+                            .getColumnIndexOrThrow("REGION_CD")));
 
                     list.add(sb);
                     dbcursor.moveToNext();
@@ -274,6 +289,51 @@ public class PNGAttendanceDB extends SQLiteOpenHelper {
 
         return list;
     }
+
+
+    public ArrayList<JCPMasterGetterSetter> getStoreListCampaignData(String date, String userid) {
+        ArrayList<JCPMasterGetterSetter> list = new ArrayList<>();
+        Cursor dbcursor = null;
+
+        try {
+            dbcursor = db.rawQuery("SELECT  * from " + CommonString.TABLE_STORELIST_CAMPAIGN + "  " +
+                    "where " + CommonString.KEY_VISIT_DATE + " ='" + date + "' and " + CommonString.KEY_USER_ID + " = '" + userid + "'", null);
+
+            if (dbcursor != null) {
+                dbcursor.moveToFirst();
+                while (!dbcursor.isAfterLast()) {
+                    JCPMasterGetterSetter sb = new JCPMasterGetterSetter();
+
+                    sb.setSTORE_CD((dbcursor.getString(dbcursor
+                            .getColumnIndexOrThrow(CommonString.KEY_STORE_CD))));
+                    sb.setEMP_CD((dbcursor.getString(dbcursor
+                            .getColumnIndexOrThrow(CommonString.KEY_EMP_CD))));
+                    sb.setUSERNAME(dbcursor.getString(dbcursor
+                            .getColumnIndexOrThrow(CommonString.KEY_USER_ID)));
+                    sb.setVISIT_DATE(dbcursor.getString(dbcursor
+                            .getColumnIndexOrThrow(CommonString.KEY_VISIT_DATE)));
+                    sb.setSTORENAME(dbcursor.getString(dbcursor
+                            .getColumnIndexOrThrow(CommonString.KEY_STORENAME)));
+                    sb.setREGION_CD(dbcursor.getString(dbcursor
+                            .getColumnIndexOrThrow(CommonString.KEY_REGION_CD)));
+                    sb.setUPLOAD_STATUS(dbcursor.getString(dbcursor
+                            .getColumnIndexOrThrow(CommonString.KEY_STATUS)));
+
+                    list.add(sb);
+                    dbcursor.moveToNext();
+                }
+                dbcursor.close();
+                return list;
+            }
+
+        } catch (Exception e) {
+            Log.d("Exception get JCP!", e.toString());
+            return list;
+        }
+
+        return list;
+    }
+
 
     public long InsertCoverageData(CoverageBean data) {
         ContentValues values = new ContentValues();
@@ -505,6 +565,18 @@ public class PNGAttendanceDB extends SQLiteOpenHelper {
         }
     }
 
+    public long updateCampaignStatusData(JCPMasterGetterSetter jcpGetSet, String status) {
+
+        try {
+            ContentValues values = new ContentValues();
+            values.put(CommonString.KEY_STATUS, status);
+            return db.update(CommonString.TABLE_STORELIST_CAMPAIGN, values,
+                    CommonString.KEY_STORE_CD + "='" + jcpGetSet.getSTORE_CD().get(0) + "' and " + CommonString.KEY_EMP_CD + " = '" + jcpGetSet.getEMP_CD().get(0) + "'", null);
+
+        } catch (Exception e) {
+            return 0;
+        }
+    }
 
     public void InsertVisitorLogindata(ArrayList<VisitorDetailGetterSetter> visitorLoginGetterSetter) {
 
@@ -536,7 +608,6 @@ public class PNGAttendanceDB extends SQLiteOpenHelper {
         }
 
     }
-
 
     public boolean isVistorDataExists(String emp_id) {
 
@@ -572,7 +643,6 @@ public class PNGAttendanceDB extends SQLiteOpenHelper {
         return false;
 
     }
-
 
     public ArrayList<VisitorDetailGetterSetter> getVisitorLoginData(String visitdate) {
 
@@ -697,5 +767,376 @@ public class PNGAttendanceDB extends SQLiteOpenHelper {
         return list;
     }
 
+    public void insertQuestionnaireData(QuestionnaireGetterSetter data) {
+
+        db.delete("QUESTIONNAIRE", null, null);
+        ContentValues values = new ContentValues();
+
+        try {
+
+            for (int i = 0; i < data.getQUESTION_ID().size(); i++) {
+
+                values.put("QUESTION_ID", Integer.parseInt(data.getQUESTION_ID().get(i)));
+                values.put("QUESTION", data.getQUESTION().get(i));
+                values.put("ANSWER_ID", Integer.parseInt(data.getANSWER_ID().get(i)));
+                values.put("ANSWER", data.getANSWER().get(i));
+                values.put("QUESTION_GROUP_ID", Integer.parseInt(data.getQUESTION_GROUP_ID().get(i)));
+                values.put("QUESTION_GROUP", data.getQUESTION_GROUP().get(i));
+                values.put("QUESTION_TYPE", data.getQUESTION_TYPE().get(i));
+
+                db.insert("QUESTIONNAIRE", null, values);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+    }
+
+    public void insertSpecialActivityData(SpecialActivityGetterSetter data) {
+
+        db.delete("SPECIAL_ACTIVITY", null, null);
+        ContentValues values = new ContentValues();
+
+        try {
+            for (int i = 0; i < data.getREGION_CD().size(); i++) {
+
+                values.put("REGION_CD", Integer.parseInt(data.getREGION_CD().get(i)));
+                values.put("ACTIVITY_CD", Integer.parseInt(data.getACTIVITY_CD().get(i)));
+                values.put("ACTIVITY", data.getACTIVITY().get(i));
+
+                db.insert("SPECIAL_ACTIVITY", null, values);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+    }
+
+    public ArrayList<SpecialActivityGetterSetter> getSpecialActivityData(String regionCd) {
+        ArrayList<SpecialActivityGetterSetter> list = new ArrayList<>();
+        Cursor dbcursor = null;
+
+        try {
+            dbcursor = db.rawQuery("SELECT  * from SPECIAL_ACTIVITY  " +
+                    "where REGION_CD ='" + regionCd + "'", null);
+
+            if (dbcursor != null) {
+                dbcursor.moveToFirst();
+                while (!dbcursor.isAfterLast()) {
+                    SpecialActivityGetterSetter sb = new SpecialActivityGetterSetter();
+
+                    sb.setACTIVITY_CD((dbcursor.getString(dbcursor
+                            .getColumnIndexOrThrow("ACTIVITY_CD"))));
+                    sb.setACTIVITY((dbcursor.getString(dbcursor
+                            .getColumnIndexOrThrow("ACTIVITY"))));
+
+                    list.add(sb);
+                    dbcursor.moveToNext();
+                }
+                dbcursor.close();
+                return list;
+            }
+
+        } catch (Exception e) {
+            Log.d("Exception get JCP!", e.toString());
+            return list;
+        }
+
+
+        return list;
+    }
+
+    public long saveSpecialActivityData(CampaignEntryGetterSetter data) {
+
+        db.delete(CommonString.TABLE_SPECIAL_ACTIVITY_SAVED_DATA, null, null);
+        ContentValues values = new ContentValues();
+
+        try {
+            if (data != null) {
+
+                values.put(CommonString.KEY_STORE_CD, Integer.parseInt(data.getStoreCd()));
+                values.put(CommonString.KEY_USER_ID, (data.getUserid()));
+                values.put(CommonString.KEY_ACTIVITY_CD, data.getActivityCd());
+                values.put(CommonString.KEY_VISIT_DATE, data.getVisitDate());
+                values.put(CommonString.KEY_IMAGE, data.getImage1());
+                values.put(CommonString.KEY_IMAGE2, data.getImage2());
+                values.put(CommonString.KEY_IMAGE3, data.getImage3());
+                values.put(CommonString.KEY_REMARK, data.getRemark());
+
+                return db.insert(CommonString.TABLE_SPECIAL_ACTIVITY_SAVED_DATA, null, values);
+            } else {
+                return 0;
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return 0;
+        }
+
+    }
+
+    public ArrayList<CampaignEntryGetterSetter> getSavedSpecialActivityData(String storeCd, String activityId, String visitdate, String username) {
+        ArrayList<CampaignEntryGetterSetter> list = new ArrayList<>();
+        Cursor dbcursor = null;
+        try {
+            dbcursor = db.rawQuery("SELECT  * from " + CommonString.TABLE_SPECIAL_ACTIVITY_SAVED_DATA + "" +
+                    " where " + CommonString.KEY_STORE_CD + " ='" + storeCd + "' and " + CommonString.KEY_ACTIVITY_CD + " ='" + activityId + "' and " + CommonString.KEY_VISIT_DATE + " ='" + visitdate + "' and " + CommonString.KEY_USER_ID + " ='" + username + "'", null);
+
+            if (dbcursor != null) {
+                dbcursor.moveToFirst();
+                while (!dbcursor.isAfterLast()) {
+                    CampaignEntryGetterSetter sb = new CampaignEntryGetterSetter();
+
+                    sb.setImage1((dbcursor.getString(dbcursor
+                            .getColumnIndexOrThrow(CommonString.KEY_IMAGE))));
+                    sb.setImage2((dbcursor.getString(dbcursor
+                            .getColumnIndexOrThrow(CommonString.KEY_IMAGE2))));
+                    sb.setImage3((dbcursor.getString(dbcursor
+                            .getColumnIndexOrThrow(CommonString.KEY_IMAGE3))));
+                    sb.setRemark((dbcursor.getString(dbcursor
+                            .getColumnIndexOrThrow(CommonString.KEY_REMARK))));
+
+                    list.add(sb);
+                    dbcursor.moveToNext();
+                }
+                dbcursor.close();
+                return list;
+            }
+
+        } catch (Exception e) {
+            Log.d("Exception get JCP!", e.toString());
+            return list;
+        }
+        return list;
+    }
+
+    public void insertStoreListCampaignData(JCPMasterGetterSetter data) {
+
+        db.delete(CommonString.TABLE_STORELIST_CAMPAIGN, null, null);
+        ContentValues values = new ContentValues();
+
+        try {
+            for (int i = 0; i < data.getSTORE_CD().size(); i++) {
+                values.put(CommonString.KEY_STORE_CD, Integer.parseInt(data.getSTORE_CD().get(i)));
+                values.put(CommonString.KEY_EMP_CD, Integer.parseInt(data.getEMP_CD().get(i)));
+                values.put(CommonString.KEY_USER_ID, (data.getUSERNAME().get(i)));
+                values.put(CommonString.KEY_VISIT_DATE, (data.getVISIT_DATE().get(i)));
+                values.put(CommonString.KEY_STORENAME, (data.getSTORENAME().get(i)));
+                values.put(CommonString.KEY_REGION_CD, Integer.parseInt(data.getREGION_CD().get(i)));
+                values.put(CommonString.KEY_STATUS, (data.getUPLOAD_STATUS().get(i)));
+
+                db.insert(CommonString.TABLE_STORELIST_CAMPAIGN, null, values);
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+    }
+
+    public ArrayList<CampaignEntryGetterSetter> getSavedSpecialActivityFromStoreCdData(String storeCd, String visitdate, String username) {
+        ArrayList<CampaignEntryGetterSetter> list = new ArrayList<>();
+        Cursor dbcursor = null;
+        try {
+            dbcursor = db.rawQuery("SELECT activity_cd,IFNULL(image,'') as image,IFNULL(image2,'') as image2,IFNULL(image3,'') as image3,IFNULL(remark1,'') as remark1 from " + CommonString.TABLE_SPECIAL_ACTIVITY_SAVED_DATA + "" +
+                    " where " + CommonString.KEY_STORE_CD + " ='" + storeCd + "' and " + CommonString.KEY_VISIT_DATE + " ='" + visitdate + "' and " + CommonString.KEY_USER_ID + " ='" + username + "'", null);
+
+            if (dbcursor != null) {
+                dbcursor.moveToFirst();
+                while (!dbcursor.isAfterLast()) {
+                    CampaignEntryGetterSetter sb = new CampaignEntryGetterSetter();
+
+                    sb.setActivityCd((dbcursor.getString(dbcursor
+                            .getColumnIndexOrThrow(CommonString.KEY_ACTIVITY_CD))));
+                    sb.setImage1((dbcursor.getString(dbcursor
+                            .getColumnIndexOrThrow(CommonString.KEY_IMAGE))));
+                    sb.setImage2((dbcursor.getString(dbcursor
+                            .getColumnIndexOrThrow(CommonString.KEY_IMAGE2))));
+                    sb.setImage3((dbcursor.getString(dbcursor
+                            .getColumnIndexOrThrow(CommonString.KEY_IMAGE3))));
+                    sb.setRemark((dbcursor.getString(dbcursor
+                            .getColumnIndexOrThrow(CommonString.KEY_REMARK))));
+
+                    list.add(sb);
+                    dbcursor.moveToNext();
+                }
+                dbcursor.close();
+                return list;
+            }
+
+        } catch (Exception e) {
+            Log.d("Exception get JCP!", e.toString());
+            return list;
+        }
+        return list;
+    }
+
+    public ArrayList<QuestionnaireGetterSetter> getQuestionnaireData(String questionGroupid) {
+        ArrayList<QuestionnaireGetterSetter> list = new ArrayList<>();
+        Cursor dbcursor = null;
+        try {
+           /* dbcursor = db.rawQuery("SELECT  * from " + CommonString.TABLE_SPECIAL_ACTIVITY_SAVED_DATA + "" +
+                    " where " + CommonString.KEY_STORE_CD + " ='" + storeCd + "' and " + CommonString.KEY_VISIT_DATE + " ='" + visitdate + "' and " + CommonString.KEY_USER_ID + " ='" + username + "'", null);*/
+
+            dbcursor = db.rawQuery("SELECT distinct QUESTION_ID,QUESTION,QUESTION_TYPE from " + CommonString.TABLE_QUESTIONS + " where " + CommonString.KEY_QUESTION_GROUP_ID + " = " + questionGroupid + "", null);
+
+
+            if (dbcursor != null) {
+                dbcursor.moveToFirst();
+                while (!dbcursor.isAfterLast()) {
+                    QuestionnaireGetterSetter sb = new QuestionnaireGetterSetter();
+
+                    sb.setQUESTION_ID((dbcursor.getString(dbcursor
+                            .getColumnIndexOrThrow(CommonString.KEY_QUESTION_ID))));
+                    sb.setQUESTION((dbcursor.getString(dbcursor
+                            .getColumnIndexOrThrow(CommonString.KEY_QUESTION))));
+                    sb.setQUESTION_TYPE((dbcursor.getString(dbcursor
+                            .getColumnIndexOrThrow(CommonString.KEY_QUESTION_TYPE))));
+                /*    sb.setANSWER_ID((dbcursor.getString(dbcursor
+                            .getColumnIndexOrThrow(CommonString.KEY_ANSWER_ID))));
+                    sb.setANSWER((dbcursor.getString(dbcursor
+                            .getColumnIndexOrThrow(CommonString.KEY_ANSWER))));
+                    sb.setQUESTION_GROUP_ID((dbcursor.getString(dbcursor
+                            .getColumnIndexOrThrow(CommonString.KEY_QUESTION_GROUP_ID))));
+                    sb.setQUESTION_GROUP((dbcursor.getString(dbcursor
+                            .getColumnIndexOrThrow(CommonString.KEY_QUESTION_GROUP))));
+                   */
+
+                    list.add(sb);
+                    dbcursor.moveToNext();
+                }
+                dbcursor.close();
+                return list;
+            }
+
+        } catch (Exception e) {
+            Log.d("Exception get JCP!", e.toString());
+            return list;
+        }
+        return list;
+    }
+
+    public ArrayList<QuestionnaireGetterSetter> getQuestionnaireAnswerData(QuestionnaireGetterSetter quesGetSet) {
+        Log.d("Fetching", "Storedata--------------->Start<------------");
+
+        ArrayList<QuestionnaireGetterSetter> list = new ArrayList<>();
+        QuestionnaireGetterSetter sb1 = new QuestionnaireGetterSetter();
+        sb1.setANSWER_ID("0");
+        sb1.setANSWER("Select");
+        list.add(0, sb1);
+
+        Cursor dbcursor = null;
+
+        try {
+            dbcursor = db.rawQuery("Select * from " + CommonString.TABLE_ANSWERS + "" +
+                    " where QUESTION_ID='" + quesGetSet.getQUESTION_ID().get(0) + "'", null);
+
+            if (dbcursor != null) {
+                dbcursor.moveToFirst();
+                while (!dbcursor.isAfterLast()) {
+                    QuestionnaireGetterSetter sb = new QuestionnaireGetterSetter();
+
+                    if (quesGetSet.getQUESTION_TYPE().get(0).equalsIgnoreCase("Dropdown")) {
+                        sb.setANSWER_ID(dbcursor.getString(dbcursor.getColumnIndexOrThrow(CommonString.KEY_ANSWER_ID)));
+                        sb.setANSWER(dbcursor.getString(dbcursor.getColumnIndexOrThrow(CommonString.KEY_ANSWER)));
+                    } else {
+                        sb.setANSWER_ID("0");
+                        sb.setANSWER("");
+                    }
+
+                    list.add(sb);
+                    dbcursor.moveToNext();
+                }
+                dbcursor.close();
+                return list;
+            }
+        } catch (Exception e) {
+            Log.d("Exception", " when fetching opening stock!!!!!!!!!!! " + e.toString());
+            return list;
+        }
+        Log.d("Fetching", " opening stock---------------------->Stop<-----------");
+        return list;
+    }
+
+    public long saveQuestionnaireData(ArrayList<QuestionnaireGetterSetter> listDataHeader, String username, String visit_date) {
+        long id = 0;
+        db.delete(CommonString.TABLE_QUESTIONNAIRE_DATA, "", null);
+        try {
+            ContentValues values = new ContentValues();
+            for (int i = 0; i < listDataHeader.size(); i++) {
+                values.put(CommonString.KEY_USERNAME, username);
+                values.put(CommonString.KEY_VISIT_DATE, visit_date);
+                values.put(CommonString.KEY_QUESTION_ID, listDataHeader.get(i).getQUESTION_ID().get(0));
+                values.put(CommonString.KEY_ANSWER, listDataHeader.get(i).getSp_Answer());
+                id = db.insert(CommonString.TABLE_QUESTIONNAIRE_DATA, null, values);
+            }
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            return 0;
+        }
+        return id;
+    }
+
+    public void insertQuestionsData(QuestionsGetterSetter data) {
+
+        db.delete("QUESTIONS", null, null);
+        ContentValues values = new ContentValues();
+
+        try {
+            for (int i = 0; i < data.getQUESTION_ID().size(); i++) {
+
+                values.put("QUESTION_ID", Integer.parseInt(data.getQUESTION_ID().get(i)));
+                values.put("QUESTION", data.getQUESTION().get(i));
+                values.put("QUESTION_GROUP_ID", data.getQUESTION_GROUP_ID().get(i));
+                values.put("QUESTION_GROUP", data.getQUESTION_GROUP().get(i));
+                values.put("QUESTION_TYPE", data.getQUESTION_TYPE().get(i));
+
+                db.insert("QUESTIONS", null, values);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+    }
+
+    public void insertAnswersData(AnswersGetterSetter data) {
+
+        db.delete("ANSWERS", null, null);
+        ContentValues values = new ContentValues();
+
+        try {
+            for (int i = 0; i < data.getQUESTION_ID().size(); i++) {
+
+                values.put("QUESTION_ID", Integer.parseInt(data.getQUESTION_ID().get(i)));
+                values.put("ANSWER_ID", Integer.parseInt(data.getANSWER_ID().get(i)));
+                values.put("ANSWER", (data.getANSWER().get(i)));
+
+                db.insert("ANSWERS", null, values);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+    }
+
+    public long saveClientFeedBackData(ArrayList<QuestionnaireGetterSetter> listDataHeader, String username, String visit_date) {
+        long id = 0;
+        db.delete(CommonString.TABLE_CLIENT_FEEDBACK_DATA, "", null);
+        try {
+            ContentValues values = new ContentValues();
+            for (int i = 0; i < listDataHeader.size(); i++) {
+                values.put(CommonString.KEY_USERNAME, username);
+                values.put(CommonString.KEY_VISIT_DATE, visit_date);
+                values.put(CommonString.KEY_QUESTION_ID, listDataHeader.get(i).getQUESTION_ID().get(0));
+                values.put(CommonString.KEY_ANSWER, listDataHeader.get(i).getSp_Answer());
+
+                id = db.insert(CommonString.TABLE_CLIENT_FEEDBACK_DATA, null, values);
+            }
+
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+        return id;
+    }
 
 }

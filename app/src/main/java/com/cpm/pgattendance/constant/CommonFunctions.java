@@ -57,8 +57,8 @@ public class CommonFunctions {
             List<ApplicationInfo> list = packageManager.getInstalledApplications(PackageManager.GET_UNINSTALLED_PACKAGES);
             for (int n = 0; n < list.size(); n++) {
                 if ((list.get(n).flags & ApplicationInfo.FLAG_SYSTEM) == 1) {
-                /*Log.e("TAG", "Installed Applications  : " + list.get(n).loadLabel(packageManager).toString());
-                Log.e("TAG", "package name  : " + list.get(n).packageName);*/
+                    Log.e("TAG", "Installed Applications  : " + list.get(n).loadLabel(packageManager).toString());
+                    Log.e("TAG", "package name  : " + list.get(n).packageName);
 
                     //temp value in case camera is gallery app above jellybean
                     if (list.get(n).loadLabel(packageManager).toString().equalsIgnoreCase("Gallery")) {
@@ -88,16 +88,83 @@ public class CommonFunctions {
 
         } catch (ActivityNotFoundException e) {
             e.printStackTrace();
-
-            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
-            intent.setPackage(gallery_package);
-            activity.startActivityForResult(intent, 1);
-
+            try {
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
+                intent.setPackage(gallery_package);
+                activity.startActivityForResult(intent, 1);
+            } catch (ActivityNotFoundException el) {
+                el.printStackTrace();
+                Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
+                activity.startActivityForResult(intent, 1);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
+
+    public static void startCameraActivityWithRequestCode(Activity activity, String path,int requestCode) {
+        String gallery_package = "";
+        Uri outputFileUri = null;
+
+        try {
+            File file = new File(path);
+            outputFileUri = Uri.fromFile(file);
+
+            String defaultCameraPackage = "";
+            final PackageManager packageManager = activity.getPackageManager();
+            List<ApplicationInfo> list = packageManager.getInstalledApplications(PackageManager.GET_UNINSTALLED_PACKAGES);
+            for (int n = 0; n < list.size(); n++) {
+                if ((list.get(n).flags & ApplicationInfo.FLAG_SYSTEM) == 1) {
+                    Log.e("TAG", "Installed Applications  : " + list.get(n).loadLabel(packageManager).toString());
+                    Log.e("TAG", "package name  : " + list.get(n).packageName);
+
+                    //temp value in case camera is gallery app above jellybean
+                    if (list.get(n).loadLabel(packageManager).toString().equalsIgnoreCase("Gallery")) {
+                        gallery_package = list.get(n).packageName;
+                    }
+
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                        if (list.get(n).loadLabel(packageManager).toString().equalsIgnoreCase("Camera")) {
+                            defaultCameraPackage = list.get(n).packageName;
+                            break;
+                        }
+                    } else {
+                        if (list.get(n).loadLabel(packageManager).toString().equalsIgnoreCase("Camera")) {
+                            defaultCameraPackage = list.get(n).packageName;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
+            intent.setPackage(defaultCameraPackage);
+            activity.startActivityForResult(intent, requestCode);
+            //startActivityForResult(intent, position);
+
+        } catch (ActivityNotFoundException e) {
+            e.printStackTrace();
+            try {
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
+                intent.setPackage(gallery_package);
+                activity.startActivityForResult(intent, requestCode);
+            } catch (ActivityNotFoundException el) {
+                el.printStackTrace();
+                Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
+                activity.startActivityForResult(intent, requestCode);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public static void setScaledImage(ImageView imageView, final String path) {
         final ImageView iv = imageView;

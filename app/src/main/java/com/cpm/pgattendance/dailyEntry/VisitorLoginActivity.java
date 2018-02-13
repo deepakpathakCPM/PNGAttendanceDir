@@ -290,13 +290,16 @@ public class VisitorLoginActivity extends AppCompatActivity implements View.OnCl
 
                 break;
             case R.id.rel_intime:
-
-                camin_clicked = true;
-                _pathforcheck = username + getCurrentTime() + "visitor_intime" + ".jpg";
-                //imageV = _pathforcheck;
-                _path = str + _pathforcheck;
-                CommonFunctions.startCameraActivity((Activity) context, _path);
-                //startCameraActivity();
+                if (et_emp_name.getText().toString() != null && !et_emp_name.getText().toString().equalsIgnoreCase("")) {
+                    camin_clicked = true;
+                    _pathforcheck = username + getCurrentTime() + "visitor_intime" + ".jpg";
+                    //imageV = _pathforcheck;
+                    _path = str + _pathforcheck;
+                    CommonFunctions.startCameraActivity((Activity) context, _path);
+                    //startCameraActivity();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Please fill employee code first", Toast.LENGTH_SHORT).show();
+                }
                 break;
 
             case R.id.rel_outtime:
@@ -769,7 +772,6 @@ public class VisitorLoginActivity extends AppCompatActivity implements View.OnCl
                 holder.img_upload_tick.setVisibility(View.INVISIBLE);
             }
 
-/*
             holder.layout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -784,14 +786,17 @@ public class VisitorLoginActivity extends AppCompatActivity implements View.OnCl
                         tvname.setText(visitorLoginGetterSetter.getName());
                         tvdesignation.setText(visitorLoginGetterSetter.getDesignation());
 
-                        for (int i = 0; i < list.size(); i++) {
+                      /*  for (int i = 0; i < list.size(); i++) {
                             if (list.get(i).getName().equalsIgnoreCase(visitorLoginGetterSetter.getName())) {
                                 visitorSpn.setSelection(i);
                             }
-                        }
+                        }*/
+
+                        et_emp_name.setText(visitorLoginGetterSetter.getName());
+
 
                         tv_in_time.setText(visitorLoginGetterSetter.getIn_time());
-                        visitorSpn.setClickable(false);
+                        et_emp_name.setFocusable(false);
                         String intime_img = visitorLoginGetterSetter.getIn_time_img();
                         if (intime_img != null && !intime_img.equals("")) {
 
@@ -825,7 +830,6 @@ public class VisitorLoginActivity extends AppCompatActivity implements View.OnCl
                     }
                 }
             });
-*/
         }
 
         @Override

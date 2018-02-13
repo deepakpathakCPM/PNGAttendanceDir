@@ -62,6 +62,29 @@ public class AlertandMessages {
         builder.show();
     }
 
+    public void backpressedAlertWithTaskRun(final Activity activity, String str, final Runnable task) {
+
+        final AlertDialog builder = new AlertDialog.Builder(activity).create();
+        builder.setTitle("Alert");
+        builder.setMessage(str);
+        builder.setCancelable(false);
+        builder.setButton("Ok", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                task.run();
+                activity.finish();
+                activity.overridePendingTransition(R.anim.activity_back_in, R.anim.activity_back_out);
+            }
+        });
+        builder.setButton2("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                builder.dismiss();
+            }
+        });
+        builder.show();
+    }
+
+
     public void backpressedAlert() {
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
@@ -70,6 +93,7 @@ public class AlertandMessages {
                 .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         activity.finish();
+                        activity.overridePendingTransition(R.anim.activity_back_in, R.anim.activity_back_out);
                     }
                 });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

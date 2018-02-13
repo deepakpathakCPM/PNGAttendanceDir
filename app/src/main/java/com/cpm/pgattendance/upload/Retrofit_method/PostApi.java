@@ -29,6 +29,9 @@ public interface PostApi {
    /* @POST("Uploadimages")
     Call<String> getUploadImage(@Body RequestBody request);*/
 
+    @retrofit.http.POST("Uploadimages")
+    retrofit.Call<String> getUploadImageRetrofitOne(@retrofit.http.Body com.squareup.okhttp.RequestBody body1);
+
     @Multipart
     @POST("Uploadimages")
     Call<String> getUploadImage(@Part MultipartBody.Part file, @Part("file") RequestBody filename, @Part("Foldername") RequestBody foldername);

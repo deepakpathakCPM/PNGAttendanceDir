@@ -18,9 +18,12 @@ import com.cpm.pgattendance.bean.TableBean;
 import com.cpm.pgattendance.constant.AlertandMessages;
 import com.cpm.pgattendance.constant.CommonString;
 import com.cpm.pgattendance.database.PNGAttendanceDB;
+import com.cpm.pgattendance.getterSetter.AnswersGetterSetter;
 import com.cpm.pgattendance.getterSetter.JCPMasterGetterSetter;
 import com.cpm.pgattendance.getterSetter.NonWorkingReasonGetterSetter;
 import com.cpm.pgattendance.getterSetter.QuestionnaireGetterSetter;
+import com.cpm.pgattendance.getterSetter.QuestionsGetterSetter;
+import com.cpm.pgattendance.getterSetter.SpecialActivityGetterSetter;
 import com.cpm.pgattendance.getterSetter.VisitorLoginGetterSetter;
 import com.cpm.pgattendance.upload.Retrofit_method.UploadImageWithRetrofit;
 import com.cpm.pgattendance.xmlHandler.XMLHandlers;
@@ -55,6 +58,9 @@ public class DownloadActivity extends AppCompatActivity {
     NonWorkingReasonGetterSetter nonWorkingReasonGetterSetter;
     VisitorLoginGetterSetter visitorLoginGetterSetter;
     QuestionnaireGetterSetter questionnaireGetterSetter;
+    SpecialActivityGetterSetter specialActivityGetterSetter;
+    QuestionsGetterSetter questionsGetterSetter;
+    AnswersGetterSetter answersGetterSetter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -231,7 +237,7 @@ public class DownloadActivity extends AppCompatActivity {
                     } else {
                         return "QUESTIONNAIRE Data";
                     }
-                    data.value = 10;
+                    data.value = 15;
                     data.name = "QUESTIONNAIRE Data";
                 }
                 publishProgress(data);
@@ -256,36 +262,117 @@ public class DownloadActivity extends AppCompatActivity {
                     xpp.next();
                     eventType = xpp.getEventType();
 
-                  /*  visitorLoginGetterSetter = XMLHandlers.visitorLoginXMLHandler(xpp, eventType);
+                    specialActivityGetterSetter = XMLHandlers.SpecialActivityXMLHandler(xpp, eventType);
 
-                    if (visitorLoginGetterSetter.getEMP_CD().size() > 0) {
+                    if (specialActivityGetterSetter.getREGION_CD().size() > 0) {
                         resultHttp = CommonString.KEY_SUCCESS;
-                        String visitorLoginTable = visitorLoginGetterSetter.getTable_VisitorLogin();
-                        TableBean.setVisitorLogintable(visitorLoginTable);
+                        String spcActivityLoginTable = specialActivityGetterSetter.getTable_SPECIAL_ACTIVITY();
+                        TableBean.setSpecialActivityTable(spcActivityLoginTable);
                     } else {
                         return "SPECIAL_ACTIVITY Data";
-                    }*/
+                    }
 
-                    data.value = 10;
+                    data.value = 20;
                     data.name = "SPECIAL_ACTIVITY Data";
                 }
                 publishProgress(data);
                 //endregion
 
+                //region QUESTIONS
+                request = new SoapObject(CommonString.NAMESPACE, CommonString.METHOD_NAME_UNIVERSAL_DOWNLOAD);
+                request.addProperty("UserName", userId);
+                request.addProperty("Type", "QUESTIONS");
+
+                envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
+                envelope.dotNet = true;
+                envelope.setOutputSoapObject(request);
+
+                androidHttpTransport = new HttpTransportSE(CommonString.URL, CommonString.TIMEOUT);
+                androidHttpTransport.call(CommonString.SOAP_ACTION_UNIVERSAL, envelope);
+
+                result = (Object) envelope.getResponse();
+
+                if (result.toString() != null) {
+                    xpp.setInput(new StringReader(result.toString()));
+                    xpp.next();
+                    eventType = xpp.getEventType();
+
+                    questionsGetterSetter = XMLHandlers.QUESTIONSXMLHandler(xpp, eventType);
+
+                    if (questionsGetterSetter.getQUESTION_ID().size() > 0) {
+                        resultHttp = CommonString.KEY_SUCCESS;
+                        String questionsTable = questionsGetterSetter.getTable_QUESTIONS();
+                        TableBean.setQuestionsTable(questionsTable);
+                    } else {
+                        return "QUESTIONS Data";
+                    }
+                    data.value = 25;
+                    data.name = "QUESTIONS Data";
+                }
+                publishProgress(data);
+                //endregion
+
+
+                //region ANSWERS
+                request = new SoapObject(CommonString.NAMESPACE, CommonString.METHOD_NAME_UNIVERSAL_DOWNLOAD);
+                request.addProperty("UserName", userId);
+                request.addProperty("Type", "ANSWERS");
+
+                envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
+                envelope.dotNet = true;
+                envelope.setOutputSoapObject(request);
+
+                androidHttpTransport = new HttpTransportSE(CommonString.URL, CommonString.TIMEOUT);
+                androidHttpTransport.call(CommonString.SOAP_ACTION_UNIVERSAL, envelope);
+
+                result = (Object) envelope.getResponse();
+
+                if (result.toString() != null) {
+                    xpp.setInput(new StringReader(result.toString()));
+                    xpp.next();
+                    eventType = xpp.getEventType();
+
+                    answersGetterSetter = XMLHandlers.ANSWERSXMLHandler(xpp, eventType);
+
+                    if (answersGetterSetter.getQUESTION_ID().size() > 0) {
+                        resultHttp = CommonString.KEY_SUCCESS;
+                        String answersTable = answersGetterSetter.getTable_ANSWERS();
+                        TableBean.setAnswersTable(answersTable);
+                    } else {
+                        return "ANSWERS Data";
+                    }
+
+                    data.value = 50;
+                    data.name = "ANSWERS Data";
+                }
+                publishProgress(data);
+                //endregion
 
                 db = new PNGAttendanceDB(context);
                 db.open();
 
                 if (jcpMasterGetterSetter.getSTORE_CD().size() > 0) {
                     db.insertJCPMasterData(jcpMasterGetterSetter);
+                    db.insertStoreListCampaignData(jcpMasterGetterSetter);
                 }
 
                 if (nonWorkingReasonGetterSetter.getReason_cd().size() > 0) {
                     db.insertNonWorkingData(nonWorkingReasonGetterSetter);
                 }
 
-                if (visitorLoginGetterSetter.getEMP_CD().size() > 0) {
-                    db.insertVisitorLoginData(visitorLoginGetterSetter);
+                if (questionnaireGetterSetter.getQUESTION_ID().size() > 0) {
+                    db.insertQuestionnaireData(questionnaireGetterSetter);
+                }
+
+                if (specialActivityGetterSetter.getREGION_CD().size() > 0) {
+                    db.insertSpecialActivityData(specialActivityGetterSetter);
+                }
+
+                if (questionsGetterSetter.getQUESTION_ID().size() > 0) {
+                    db.insertQuestionsData(questionsGetterSetter);
+                }
+                if (answersGetterSetter.getQUESTION_ID().size() > 0) {
+                    db.insertAnswersData(answersGetterSetter);
                 }
 
                 editor = preferences.edit();
@@ -317,7 +404,6 @@ public class DownloadActivity extends AppCompatActivity {
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
             dialog.dismiss();
-
             if (result.equals(CommonString.KEY_SUCCESS)) {
                 AlertandMessages.showAlert((Activity) context, CommonString.MESSAGE_DOWNLOAD, true);
             } else {

@@ -3,17 +3,16 @@ package com.cpm.pgattendance.getterSetter;
 import java.util.ArrayList;
 
 /**
- * Created by deepakp on 15-01-2018.
+ * Created by deepakp on 23-01-2018.
  */
 
-public class QuestionnaireGetterSetter {
-
-    public String getTable_QUESTIONNAIRE() {
-        return table_QUESTIONNAIRE;
+public class QuestionsGetterSetter {
+    public String getTable_QUESTIONS() {
+        return table_QUESTIONS;
     }
 
-    public void setTable_QUESTIONNAIRE(String table_QUESTIONNAIRE) {
-        this.table_QUESTIONNAIRE = table_QUESTIONNAIRE;
+    public void setTable_QUESTIONS(String table_QUESTIONS) {
+        this.table_QUESTIONS = table_QUESTIONS;
     }
 
     public ArrayList<String> getQUESTION_ID() {
@@ -30,22 +29,6 @@ public class QuestionnaireGetterSetter {
 
     public void setQUESTION(String QUESTION) {
         this.QUESTION.add(QUESTION);
-    }
-
-    public ArrayList<String> getANSWER_ID() {
-        return ANSWER_ID;
-    }
-
-    public void setANSWER_ID(String ANSWER_ID) {
-        this.ANSWER_ID.add(ANSWER_ID);
-    }
-
-    public ArrayList<String> getANSWER() {
-        return ANSWER;
-    }
-
-    public void setANSWER(String ANSWER) {
-        this.ANSWER.add(ANSWER);
     }
 
     public ArrayList<String> getQUESTION_GROUP_ID() {
@@ -72,29 +55,9 @@ public class QuestionnaireGetterSetter {
         this.QUESTION_TYPE.add(QUESTION_TYPE);
     }
 
-    public String getSp_AnswerId() {
-        return Sp_AnswerId;
-    }
-
-    public void setSp_AnswerId(String sp_AnswerId) {
-        Sp_AnswerId = sp_AnswerId;
-    }
-
-    public String getSp_Answer() {
-        return Sp_Answer;
-    }
-
-    public void setSp_Answer(String sp_Answer) {
-        Sp_Answer = sp_Answer;
-    }
-
-    String Sp_Answer;
-    String Sp_AnswerId;
-    String table_QUESTIONNAIRE;
+    String table_QUESTIONS;
     ArrayList<String> QUESTION_ID = new ArrayList<>();
     ArrayList<String> QUESTION = new ArrayList<>();
-    ArrayList<String> ANSWER_ID = new ArrayList<>();
-    ArrayList<String> ANSWER = new ArrayList<>();
     ArrayList<String> QUESTION_GROUP_ID = new ArrayList<>();
     ArrayList<String> QUESTION_GROUP = new ArrayList<>();
     ArrayList<String> QUESTION_TYPE = new ArrayList<>();

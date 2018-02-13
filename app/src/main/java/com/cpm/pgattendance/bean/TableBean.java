@@ -47,6 +47,33 @@ public class TableBean {
         TableBean.questionnaireTable = questionnaireTable;
     }
 
+    public static String getSpecialActivityTable() {
+        return specialActivityTable;
+    }
+
+    public static void setSpecialActivityTable(String specialActivityTable) {
+        TableBean.specialActivityTable = specialActivityTable;
+    }
+
+    public static String getQuestionsTable() {
+        return QuestionsTable;
+    }
+
+    public static void setQuestionsTable(String questionsTable) {
+        QuestionsTable = questionsTable;
+    }
+
+    public static String getAnswersTable() {
+        return AnswersTable;
+    }
+
+    public static void setAnswersTable(String answersTable) {
+        AnswersTable = answersTable;
+    }
+
+    public static String AnswersTable;
+    public static String QuestionsTable;
+    public static String specialActivityTable;
     public static String questionnaireTable;
     public static String visitorLogintable;
     public static String nonworkingtable;
