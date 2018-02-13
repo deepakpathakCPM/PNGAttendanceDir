@@ -6,8 +6,8 @@ android {
         applicationId "com.cpm.pgattendance"
         minSdkVersion 16
         targetSdkVersion 22
-        versionCode 1
-        versionName "1.0"
+        versionCode 3
+        versionName "1.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -30,8 +30,10 @@ dependencies {
     compile 'com.squareup.retrofit2:converter-gson:2.0.2'
     compile 'com.squareup.retrofit2:converter-gson:2.0.0-beta1'
     compile 'com.squareup.retrofit2:retrofit:2.0.2'
+    compile 'com.squareup.retrofit:converter-gson:2.0.0-beta1'
     compile 'com.google.android.gms:play-services-location:9.8.0'
     compile 'com.google.android.gms:play-services-maps:9.8.0'
     compile files('libs/ksoap2-android-assembly-3.0.0-jar-with-dependencies.jar')
     implementation files('libs/org.apache.http.legacy.jar')
+    compile(name: 'customCamera', ext: 'aar')
 }

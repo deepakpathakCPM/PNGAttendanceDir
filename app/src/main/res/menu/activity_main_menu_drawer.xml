@@ -24,17 +24,35 @@
             android:visible="false" />
         <item
             android:id="@+id/visitorLogin"
-            android:icon="@mipmap/upload_grey"
+            android:icon="@mipmap/visitor"
             android:title="Visitor Login" />
         <item
             android:id="@+id/campaign"
-            android:icon="@mipmap/upload_grey"
-            android:title="Campaign" />
+            android:icon="@mipmap/activity"
+            android:title="Special Activity Photos"
+            android:visible="true" />
+        <item
+            android:id="@+id/questionnaire"
+            android:icon="@mipmap/quiz"
+            android:title="Monthly Quiz"
+            android:visible="true" />
+
+        <item
+            android:id="@+id/clientFeedback"
+            android:icon="@mipmap/client"
+            android:title="Client Feedback"
+            android:visible="true" />
 
         <item
             android:id="@+id/myPerformance"
-            android:icon="@mipmap/upload_grey"
+            android:icon="@mipmap/graph"
             android:title="My Performance" />
+
+        <item
+            android:id="@+id/customCamera"
+            android:icon="@mipmap/graph"
+            android:title="Custom Camera"
+            android:visible="false" />
         <item
             android:id="@+id/exit"
             android:icon="@mipmap/exit_grey"

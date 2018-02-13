@@ -24,9 +24,30 @@ public class JCPMasterGetterSetter implements Serializable {
     ArrayList<String> CHECKOUT_STATUS = new ArrayList<String>();
     ArrayList<String> GEO_TAG = new ArrayList<String>();
 
+    public boolean isFilled() {
+        return isFilled;
+    }
+
+    public void setFilled(boolean filled) {
+        isFilled = filled;
+    }
+
+    boolean isFilled;
+
+    public ArrayList<String> getREGION_CD() {
+        return REGION_CD;
+    }
+
+    public void setREGION_CD(String REGION_CD) {
+        this.REGION_CD.add(REGION_CD);
+    }
+
+    ArrayList<String> REGION_CD = new ArrayList<String>();
+
     public ArrayList<String> getUSERNAME() {
         return USERNAME;
     }
+
     public void setUSERNAME(String USERNAME) {
         this.USERNAME.add(USERNAME);
     }

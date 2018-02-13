@@ -1,10 +1,13 @@
 package com.cpm.pgattendance;
 
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
@@ -24,18 +27,27 @@ import android.widget.Toast;
 import com.cpm.pgattendance.constant.AlertandMessages;
 import com.cpm.pgattendance.constant.CommonFunctions;
 import com.cpm.pgattendance.constant.CommonString;
-import com.cpm.pgattendance.dailyEntry.CampaignListActivity;
+import com.cpm.pgattendance.dailyEntry.ClientFeedbackActivity;
 import com.cpm.pgattendance.dailyEntry.MyPerfromanceActivity;
+import com.cpm.pgattendance.dailyEntry.QuestionnaireActivity;
 import com.cpm.pgattendance.dailyEntry.StoreListActivity;
+import com.cpm.pgattendance.dailyEntry.StoreListForCampaignActivity;
 import com.cpm.pgattendance.dailyEntry.VisitorLoginActivity;
 import com.cpm.pgattendance.database.PNGAttendanceDB;
 import com.cpm.pgattendance.download.DownloadActivity;
+import com.cpm.pgattendance.upload.Retrofit_method.UploadImageWithRetrofit;
+import com.example.deepakp.customcamera.CustomCameraActivity;
+
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
+import java.util.concurrent.TimeUnit;
 
 public class MainMenuActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -46,7 +58,9 @@ public class MainMenuActivity extends AppCompatActivity
     private ImageView imageView;
     String url;
     private SharedPreferences preferences;
-    Intent myPerformanceintent, visitorIntent;
+    Intent myPerformanceintent, clientFeedbackIntent, visitorIntent;
+    Intent exitIntent, questionnaireIntent;
+    String visit_date_formatted, user_name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +68,10 @@ public class MainMenuActivity extends AppCompatActivity
         setContentView(R.layout.activity_main_menu);
         declaration();
         myPerformanceintent = new Intent(context, MyPerfromanceActivity.class);
+        exitIntent = new Intent(context, LoginActivity.class);
         visitorIntent = new Intent(context, VisitorLoginActivity.class);
+        questionnaireIntent = new Intent(context, QuestionnaireActivity.class);
+        clientFeedbackIntent = new Intent(context, ClientFeedbackActivity.class);
         webView.setWebViewClient(new MyWebViewClient());
         webView.getSettings().setJavaScriptEnabled(true);
         if (!url.equals("")) {
@@ -104,6 +121,7 @@ public class MainMenuActivity extends AppCompatActivity
             if (CommonFunctions.checkNetIsAvailable(context)) {
                 Intent startDownload = new Intent(context, DownloadActivity.class);
                 startActivity(startDownload);
+                overridePendingTransition(R.anim.activity_in, R.anim.activity_out);
             } else {
                 AlertandMessages.showSnackbarMsg(context, CommonString.MESSAGE_INTERNET_NOT_AVAILABLE);
             }
@@ -128,19 +146,29 @@ public class MainMenuActivity extends AppCompatActivity
         } else if (id == R.id.uploadData) {
 
         } else if (id == R.id.campaign) {
-
             startActivity(campaignIntent);
-
+            overridePendingTransition(R.anim.activity_in, R.anim.activity_out);
         } else if (id == R.id.visitorLogin) {
             if (preferences.getBoolean(CommonString.KEY_ISDATADOWNLOADED, false)) {
                 startActivity(visitorIntent);
+                overridePendingTransition(R.anim.activity_in, R.anim.activity_out);
             } else {
                 AlertandMessages.showSnackbarMsg(context, "Please download data");
             }
         } else if (id == R.id.myPerformance) {
             startActivity(myPerformanceintent);
+        } else if (id == R.id.customCamera) {
+            CustomCameraActivity customCameraActivity = new CustomCameraActivity(context, CommonString.FILE_PATH, "abc");
+            customCameraActivity.startCameraActivity();
+            overridePendingTransition(R.anim.activity_in, R.anim.activity_out);
+
+        } else if (id == R.id.clientFeedback) {
+            startActivity(clientFeedbackIntent);
+            overridePendingTransition(R.anim.activity_in, R.anim.activity_out);
+        } else if (id == R.id.questionnaire) {
+            startActivity(questionnaireIntent);
+            overridePendingTransition(R.anim.activity_in, R.anim.activity_out);
         } else if (id == R.id.exit) {
-            Intent exitIntent = new Intent(context, LoginActivity.class);
             exitIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(exitIntent);
             overridePendingTransition(R.anim.activity_back_in, R.anim.activity_back_out);
@@ -168,7 +196,8 @@ public class MainMenuActivity extends AppCompatActivity
                                     String dateString = sdf.format(date);
 
                                     String currentDBPath = "//data//com.cpm.pgattendance//databases//" + PNGAttendanceDB.DATABASE_NAME;
-                                    String backupDBPath = "PngAttendance_backup" + dateString.replace('/', '-');
+                                    //String backupDBPath = "PngAttendance_backup" + dateString.replace('/', '-');
+                                    String backupDBPath = "PngAttendance_" + user_name.replace(".", "") + "_backup-" + visit_date_formatted + "-" + CommonFunctions.getCurrentTimeHHMMSS().replace(":", "") + ".db";
 
                                     String path = Environment.getExternalStorageDirectory().getPath();
 
@@ -185,6 +214,8 @@ public class MainMenuActivity extends AppCompatActivity
                                         src.close();
                                         dst.close();
                                     }
+                                    new uploadbackup(backupDBPath).execute();
+
                                 }
                             } catch (Exception e) {
                                 System.out.println(e.getMessage());
@@ -206,6 +237,37 @@ public class MainMenuActivity extends AppCompatActivity
         return true;
     }
 
+    private class uploadbackup extends AsyncTask<String, String, String> {
+        ProgressDialog pd;
+        String backupName;
+
+        uploadbackup(String backupName) {
+            this.backupName = backupName;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pd = new ProgressDialog(context);
+            pd.setMessage("Uploading Backup");
+            pd.setCancelable(false);
+            pd.show();
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+
+            String path = Environment.getExternalStorageDirectory().getPath();
+            File backupfile = new File(path + "/" + backupName);
+            if (backupfile.exists()) {
+                UploadImageWithRetrofit uploadRetro = new UploadImageWithRetrofit(context);
+                uploadRetro.uploadBackupWithRetrofit(backupfile, "DBBackup", path, pd);
+            }
+            return "";
+        }
+
+    }
+
     private class MyWebViewClient extends WebViewClient {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
@@ -220,8 +282,15 @@ public class MainMenuActivity extends AppCompatActivity
             super.onPageFinished(view, url);
             view.clearCache(true);
         }
+
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        int requestCode4 = requestCode;
+        int resultCode4 = resultCode;
+    }
 
     void declaration() {
         context = this;
@@ -229,9 +298,11 @@ public class MainMenuActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         url = preferences.getString(CommonString.KEY_NOTICE_BOARD_LINK, "");
-        String user_name = preferences.getString(CommonString.KEY_USERNAME, "");
+        user_name = preferences.getString(CommonString.KEY_USERNAME, "");
+        visit_date_formatted = preferences.getString(CommonString.KEY_YYYYMMDD_DATE, "");
         storeListIntent = new Intent(context, StoreListActivity.class);
-        campaignIntent = new Intent(context, CampaignListActivity.class);
+        campaignIntent = new Intent(context, StoreListForCampaignActivity.class);
+        clientFeedbackIntent = new Intent(context, ClientFeedbackActivity.class);
         imageView = (ImageView) findViewById(R.id.img_main);
         webView = (WebView) findViewById(R.id.webview);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

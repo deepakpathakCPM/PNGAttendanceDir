@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.cpm.pgattendance">
 
     <!-- To auto-complete the email text field in the login form with the user's emails -->
@@ -27,7 +28,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        tools:replace="android:icon,android:theme">
         <activity
             android:name=".LoginActivity"
             android:label="@string/action_login" />
@@ -69,10 +71,23 @@
         <activity
             android:name=".dailyEntry.MyPerfromanceActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".dailyEntry.CampaignListActivity" />
+        <activity
+            android:name=".dailyEntry.CampaignListActivity"
+            android:label="@string/title_activity_campaign_list" />
         <activity
             android:name=".dailyEntry.CampaignEntryActivity"
             android:label="@string/title_activity_campaign_entry"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".dailyEntry.StoreListForCampaignActivity"
+            android:label="@string/title_activity_store_list" />
+        <activity
+            android:name=".dailyEntry.QuestionnaireActivity"
+            android:label="@string/title_activity_questionnaire"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".dailyEntry.ClientFeedbackActivity"
+            android:label="@string/title_activity_client_feedback"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

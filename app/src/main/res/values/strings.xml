@@ -31,6 +31,7 @@
     <string name="title_activity_attendance">AttendanceActivity</string>
     <string name="NodataAvailable">No data available</string>
     <string name="Pleasedownaloaddata">Please download data</string>
+    <string name="tryStore">Try Other Store</string>
     <string name="title_store_list_activity_store_already_done">Store Already Uploaded</string>
     <string name="title_store_list_activity_store_already_checkout">Store Already Checkout</string>
     <string name="title_store_list_activity_store_again_uploaded">Please Upload data again</string>
@@ -38,6 +39,12 @@
     <string name="title_store_list_activity_already_store_closed">Store Already Closed</string>
     <string name="title_activity_non_working">Non Working</string>
     <string name="title_activity_visitor_login">Visitor Login</string>
-    <string name="title_activity_campaign_entry">CampaignEntryActivity</string>
+    <string name="title_activity_campaign_list">Campaign List</string>
+    <string name="title_activity_campaign_entry">Campaign Entry</string>
+    <string name="title_activity_questionnaire">Questionnaire</string>
+    <string name="title_activity_client_feedback">Client Feedback</string>
+    <string name="data_uploaded_successfully">Database Uploaded Successfully</string>
+    <string name="database_not_uploaded">Database Not Uploaded</string>
+    <string name="errordatabase_not_uploaded">Error in Database Uploading</string>
 
 </resources>

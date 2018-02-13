@@ -61,6 +61,7 @@ public class CommonString {
     public static final String KEY_LONGITUDE = "LONGITUDE";
     public static final String KEY_COVERAGE_STATUS = "Coverage_status";
     public static final String KEY_REASON = "REASON";
+    public static final String KEY_REMARK = "remark1";
     public static final String KEY_REASON_ID = "REASON_ID";
     public static final String KEY_U = "U";
     public static final String KEY_C = "C";
@@ -69,9 +70,11 @@ public class CommonString {
     public static final String KEY_INVALID = "InValid";
     public static final String KEY_VALID = "Valid";
     public static final String TAG_OBJECT = "object";
+    public static final String TAG_OBJECT1 = "object1";
     public static final String TAG_FOR = "for";
     public static final String DATA_DELETE_ALERT_MESSAGE = "Saved data will be lost - Do you want to continue?";
     public static final String TABLE_VISITOR_LOGIN = "TABLE_VISITOR_LOGIN";
+    public static final String TABLE_STORELIST_CAMPAIGN = "STORELIST_CAMPAIGN";
     public static final String KEY_DESIGNATION = "DESIGNATION";
     public static final String KEY_EMP_CODE = "EMP_CODE";
     public static final String KEY_IN_TIME_IMAGE = "IN_TIME_IMAGE";
@@ -83,6 +86,27 @@ public class CommonString {
     public static final String KEY_IS_QUIZ_DONE = "is_quiz_done";
     public static final String KEY_QUESTION_CD = "question_cd";
     public static final String KEY_ANSWER_CD = "answer_cd";
+    public static final String KEY_ACTIVITY_CD = "activity_cd";
+    public static final String KEY_IMAGE = "image";
+    public static final String KEY_IMAGE2 = "image2";
+    public static final String KEY_IMAGE3 = "image3";
+    public static final String KEY_STORENAME = "STORENAME";
+    public static final String KEY_STATUS = "STATUS";
+    public static final String KEY_REGION_CD = "REGION_CD";
+    public static final String KEY_QUESTION_ID = "QUESTION_ID";
+    public static final String KEY_QUESTION = "QUESTION";
+    public static final String KEY_ANSWER_ID = "ANSWER_ID";
+    public static final String KEY_ANSWER = "ANSWER";
+    public static final String KEY_QUESTION_GROUP_ID = "QUESTION_GROUP_ID";
+    public static final String KEY_QUESTION_GROUP = "QUESTION_GROUP";
+    public static final String KEY_QUESTION_TYPE = "QUESTION_TYPE";
+    public static final String MSG_DATA_LOST = "Do you want to exit? Filled data will be lost";
+    public static final String TABLE_SPECIAL_ACTIVITY_SAVED_DATA = "SPECIAL_ACTIVITY_SAVED_DATA";
+    public static final String TABLE_QUESTIONNAIRE = "QUESTIONNAIRE";
+    public static final String TABLE_QUESTIONS = "QUESTIONS";
+    public static final String TABLE_ANSWERS = "ANSWERS";
+    public static final String TABLE_QUESTIONNAIRE_DATA = "QUESTIONNAIRE_DATA";
+    public static final String TABLE_CLIENT_FEEDBACK_DATA = "CLIENT_FEEDBACK_DATA";
     public static final int TIMEOUT = 20000;
 
 
@@ -127,6 +151,45 @@ public class CommonString {
             + KEY_OUT_TIME + " VARCHAR,"
             + KEY_IN_TIME_IMAGE + " VARCHAR,"
             + KEY_OUT_TIME_IMAGE + " VARCHAR)";
+
+    public static final String CREATE_TABLE_SPECIAL_ACTIVITY_SAVED_DATA = "CREATE TABLE "
+            + TABLE_SPECIAL_ACTIVITY_SAVED_DATA + " (" + KEY_ID
+            + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+            + KEY_STORE_CD + " INTEGER,"
+            + KEY_USER_ID + " VARCHAR,"
+            + KEY_VISIT_DATE + " VARCHAR,"
+            + KEY_ACTIVITY_CD + " INTEGER,"
+            + KEY_IMAGE + " VARCHAR,"
+            + KEY_IMAGE2 + " VARCHAR,"
+            + KEY_IMAGE3 + " VARCHAR,"
+            + KEY_REMARK + " VARCHAR)";
+
+    public static final String CREATE_TABLE_STORELIST_CAMPAIGN = "CREATE TABLE "
+            + TABLE_STORELIST_CAMPAIGN + " (" + KEY_ID
+            + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+            + KEY_STORE_CD + " INTEGER,"
+            + KEY_EMP_CD + " INTEGER,"
+            + KEY_USER_ID + " INTEGER,"
+            + KEY_VISIT_DATE + " VARCHAR,"
+            + KEY_REGION_CD + " INTEGER,"
+            + KEY_STORENAME + " VARCHAR,"
+            + KEY_STATUS + " VARCHAR)";
+
+    public static final String CREATE_TABLE_QUESTIONNAIRE_DATA = "CREATE TABLE "
+            + TABLE_QUESTIONNAIRE_DATA + " (" + KEY_ID
+            + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+            + KEY_USERNAME + " VARCHAR,"
+            + KEY_VISIT_DATE + " VARCHAR,"
+            + KEY_QUESTION_ID + " INTEGER,"
+            + KEY_ANSWER + " VARCHAR)";
+
+    public static final String CREATE_TABLE_CLIENT_FEEDBACK_DATA = "CREATE TABLE "
+            + TABLE_CLIENT_FEEDBACK_DATA + " (" + KEY_ID
+            + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+            + KEY_USERNAME + " VARCHAR,"
+            + KEY_VISIT_DATE + " VARCHAR,"
+            + KEY_QUESTION_ID + " INTEGER,"
+            + KEY_ANSWER + " VARCHAR)";
 
 
 }
